@@ -55,7 +55,6 @@ end
 
 -- Sound effects
 local function update_sound_effects()
-    mod:echo("sounds")
     local ranged_shooting_labels = {
         weapon_autopistol_auto = {
             braced = "weapon_autopistol_auto",
