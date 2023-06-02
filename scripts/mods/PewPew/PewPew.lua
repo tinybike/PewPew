@@ -1,39 +1,60 @@
 local mod = get_mod("PewPew")
 
 --[[
-Title: PewPew
+Mod: PewPew
+Description: Change ranged weapon sounds and projectile visual effects
 Author: tinybike (GlaresAtKoalas on Nexus)
-Date: 5/29/2023
-Version: 0.1
 ]]
 
+local PlayerLineEffects = require("scripts/settings/effects/player_line_effects")
+local PlayerCharacterSoundEventAliases = require("scripts/settings/sound/player_character_sound_event_aliases")
+
+local function load_resource(package_name, cb)
+    if Application.can_get_resource("package", package_name) then
+        Managers.package:load(package_name, "PewPew", cb)
+    else
+        cb()
+    end
+end
+
 -- Projectile visual effects
-mod:hook_require("scripts/settings/effects/player_line_effects", function(line_effects)
-    mod:echo("visuals")
+local function update_line_effects()
     local line_effects_to_be_changed = mod:get("line_effects_to_be_changed")
     local new_line_effects = mod:get("new_line_effects")
-    line_effects[line_effects_to_be_changed].vfx = line_effects[new_line_effects].vfx
-    line_effects[line_effects_to_be_changed].sfx = line_effects[new_line_effects].sfx
-    line_effects[line_effects_to_be_changed].vfx_width = line_effects[new_line_effects].vfx_width
-    line_effects[line_effects_to_be_changed].keep_aligned = line_effects[new_line_effects].keep_aligned
-    line_effects[line_effects_to_be_changed].vfx_crit = line_effects[new_line_effects].vfx_crit
-    line_effects[line_effects_to_be_changed].link = line_effects[new_line_effects].link
-    if type(line_effects[new_line_effects].emitters) == "table" then
-        line_effects[line_effects_to_be_changed].emitters = table.clone(line_effects[new_line_effects].emitters)
+    PlayerLineEffects[line_effects_to_be_changed].vfx_width = PlayerLineEffects[new_line_effects].vfx_width
+    PlayerLineEffects[line_effects_to_be_changed].keep_aligned = PlayerLineEffects[new_line_effects].keep_aligned
+    PlayerLineEffects[line_effects_to_be_changed].link = PlayerLineEffects[new_line_effects].link
+    load_resource(PlayerLineEffects[new_line_effects].vfx, function()
+        PlayerLineEffects[line_effects_to_be_changed].vfx = PlayerLineEffects[new_line_effects].vfx
+    end)    
+    load_resource(PlayerLineEffects[new_line_effects].sfx, function()
+        PlayerLineEffects[line_effects_to_be_changed].sfx = PlayerLineEffects[new_line_effects].sfx
+    end)
+    load_resource(PlayerLineEffects[new_line_effects].vfx_crit, function()
+        PlayerLineEffects[line_effects_to_be_changed].vfx_crit = PlayerLineEffects[new_line_effects].vfx_crit
+    end)
+    if type(PlayerLineEffects[new_line_effects].emitters) == "table" then
+        load_resource(PlayerLineEffects[new_line_effects].emitters.vfx.default, function()
+            load_resource(PlayerLineEffects[new_line_effects].emitters.vfx.start, function()
+                PlayerLineEffects[line_effects_to_be_changed].emitters = table.clone(PlayerLineEffects[new_line_effects].emitters)
+            end)
+        end)
     else
-        line_effects[line_effects_to_be_changed].emitters = nil
+        PlayerLineEffects[line_effects_to_be_changed].emitters = nil
     end
-    if type(line_effects[new_line_effects].emitters_crit) == "table" then
-        line_effects[line_effects_to_be_changed].emitters_crit = table.clone(line_effects[new_line_effects].emitters_crit)
+    if type(PlayerLineEffects[new_line_effects].emitters_crit) == "table" then
+        load_resource(PlayerLineEffects[new_line_effects].emitters_crit.vfx.default, function()
+            load_resource(PlayerLineEffects[new_line_effects].emitters_crit.vfx.start, function()
+                PlayerLineEffects[line_effects_to_be_changed].emitters_crit = table.clone(PlayerLineEffects[new_line_effects].emitters_crit)
+            end)
+        end)
     else
-        line_effects[line_effects_to_be_changed].emitters_crit = nil
+        PlayerLineEffects[line_effects_to_be_changed].emitters_crit = nil
     end
-    mod:echo(line_effects[line_effects_to_be_changed].vfx)
-    mod:echo(line_effects[line_effects_to_be_changed].sfx)
-end)
+end
 
 -- Sound effects
-mod:hook_require("scripts/settings/sound/player_character_sound_event_aliases", function(events)
+local function update_sound_effects()
     mod:echo("sounds")
     local ranged_shooting_labels = {
         weapon_autopistol_auto = {
@@ -115,14 +136,27 @@ mod:hook_require("scripts/settings/sound/player_character_sound_event_aliases", 
     if ranged_shooting_labels[new_ranged_shooting_sfx].pre_loop_shot ~= nil then
         play_new_ranged_pre_loop_shot = "wwise/events/weapon/play_" .. ranged_shooting_labels[new_ranged_shooting_sfx].pre_loop_shot
     end
-    mod:echo(play_new_ranged_shooting_auto)
-    mod:echo(stop_new_ranged_shooting_auto)
-    mod:echo(play_new_ranged_braced_shooting_auto)
-    mod:echo(stop_new_ranged_braced_shooting_auto)
-    mod:echo(play_new_ranged_pre_loop_shot)
-    events.play_ranged_shooting.events[weapon_to_be_changed] = play_new_ranged_shooting_auto
-    events.stop_ranged_shooting.events[weapon_to_be_changed] = stop_new_ranged_shooting_auto
-    events.play_ranged_braced_shooting.events[weapon_to_be_changed] = play_new_ranged_braced_shooting_auto
-    events.stop_ranged_braced_shooting.events[weapon_to_be_changed] = stop_new_ranged_braced_shooting_auto
-    events.ranged_pre_loop_shot.events[weapon_to_be_changed] = play_new_ranged_pre_loop_shot
-end)
+    load_resource(play_new_ranged_shooting_auto, function()
+        PlayerCharacterSoundEventAliases.play_ranged_shooting.events[weapon_to_be_changed] = play_new_ranged_shooting_auto
+    end)
+    load_resource(stop_new_ranged_shooting_auto, function()
+        PlayerCharacterSoundEventAliases.stop_ranged_shooting.events[weapon_to_be_changed] = stop_new_ranged_shooting_auto
+    end)
+    load_resource(play_new_ranged_braced_shooting_auto, function()
+        PlayerCharacterSoundEventAliases.play_ranged_braced_shooting.events[weapon_to_be_changed] = play_new_ranged_braced_shooting_auto
+    end)
+    load_resource(stop_new_ranged_braced_shooting_auto, function()
+        PlayerCharacterSoundEventAliases.stop_ranged_braced_shooting.events[weapon_to_be_changed] = stop_new_ranged_braced_shooting_auto
+    end)
+    load_resource(play_new_ranged_pre_loop_shot, function()
+        PlayerCharacterSoundEventAliases.ranged_pre_loop_shot.events[weapon_to_be_changed] = play_new_ranged_pre_loop_shot
+    end)
+end
+
+update_line_effects()
+update_sound_effects()
+
+mod.on_setting_changed = function()
+    update_line_effects()
+    update_sound_effects()
+end
