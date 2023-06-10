@@ -134,11 +134,8 @@ mod.sound_effects_widgets = {
 	{ setting_id="ogryn_heavystubber_p1_m1", default_value="heavy_stubber_auto" },
 	{ setting_id="ogryn_heavystubber_p1_m2", default_value="heavy_stubber_p1_m2_auto" },
 	{ setting_id="ogryn_heavystubber_p1_m3", default_value="heavy_stubber_p1_m3_auto" },
--- }
--- mod.single_shot_sound_effects_widgets = {
-	{ setting_id="autopistol_p1_m1", default_value="weapon_autopistol" },
-	{ setting_id="autopistol_p1_m2", default_value="weapon_autopistol" },
-	{ setting_id="autopistol_p1_m3", default_value="weapon_autopistol" },
+}
+mod.single_shot_sound_effects_widgets = {
 	{ setting_id="autogun_p3_m1", default_value="autogun_p3_m1_single" },
 	{ setting_id="autogun_p3_m2", default_value="autogun_p3_m2_single" },
 	{ setting_id="autogun_p3_m3", default_value="autogun_p3_m3_single" },
@@ -146,9 +143,6 @@ mod.sound_effects_widgets = {
 	{ setting_id="bolter_p1_m2", default_value="weapon_bolter" },
 	{ setting_id="bolter_p1_m3", default_value="weapon_bolter" },
 	{ setting_id="forcestaff_p1_m1", default_value="psyker_smite_fire" },
-	{ setting_id="forcestaff_p2_m1", default_value="psyker_smite_fire" },	
-	{ setting_id="forcestaff_p2_m2", default_value="psyker_smite_fire" },
-	{ setting_id="forcestaff_p3_m1", default_value="psyker_smite_fire" },
 	{ setting_id="forcestaff_p4_m1", default_value="psyker_smite_fire" },
 	{ setting_id="laspistol_p1_m1", default_value="weapon_laspistol" },
 	{ setting_id="laspistol_p1_m2", default_value="laspistol_p1_m2" },
@@ -175,18 +169,18 @@ mod.sound_effects_widgets = {
 	{ setting_id="stubrevolver_p1_m1", default_value="stub_revolver" },
 	{ setting_id="stubrevolver_p1_m2", default_value="stub_revolver_p1_m2" },
 	{ setting_id="stubrevolver_p1_m3", default_value="stub_revolver_p1_m3" },
-	{ setting_id="bot_zola_laspistol", default_value="weapon_laspistol" },
-	{ setting_id="bot_laspistol_killshot", default_value="weapon_laspistol" },
-	{ setting_id="bot_lasgun_killshot", default_value="weapon_lasgun_p1_m1" },
-	{ setting_id="bot_autogun_killshot", default_value="autogun_p3_m1_single" },
+	-- { setting_id="bot_zola_laspistol", default_value="weapon_laspistol" },
+	-- { setting_id="bot_laspistol_killshot", default_value="weapon_laspistol" },
+	-- { setting_id="bot_lasgun_killshot", default_value="weapon_lasgun_p1_m1" },
+	-- { setting_id="bot_autogun_killshot", default_value="autogun_p3_m1_single" },
 }
 for i, sound_effects_widget in ipairs(mod.sound_effects_widgets) do
 	mod.sound_effects_widgets[i].type = "dropdown"
 	mod.sound_effects_widgets[i].options = table.clone(SOUND_EFFECTS_OPTIONS)
--- end
--- for i, single_shot_sound_effects_widgets in ipairs(mod.single_shot_sound_effects_widgets) do
--- 	mod.single_shot_sound_effects_widgets[i].type = "dropdown"
--- 	mod.single_shot_sound_effects_widgets[i].options = table.clone(SINGLE_SHOT_SOUND_EFFECTS_OPTIONS)
+end
+for i, single_shot_sound_effects_widgets in ipairs(mod.single_shot_sound_effects_widgets) do
+	mod.single_shot_sound_effects_widgets[i].type = "dropdown"
+	mod.single_shot_sound_effects_widgets[i].options = table.clone(SINGLE_SHOT_SOUND_EFFECTS_OPTIONS)
 end
 
 return {
