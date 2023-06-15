@@ -44,47 +44,61 @@ local RANGED_SHOOTING_SOUND_EFFECTS = {
     power_sword_loop = { braced="power_sword_loop", pre_loop_shot="weapon_silence", single_shot=nil },
     ogryn_power_maul_1h_loop = { braced="ogryn_power_maul_1h_loop", pre_loop_shot="weapon_silence", single_shot=nil },
 }
+local CHARGED_SINGLE_SHOT_SFX = {
+    lasgun_p2_p1 = "lasgun_p2_p1_charged",
+    lasgun_p2_m2 = "lasgun_p2_m2_charged",
+    lasgun_p2_m3 = "lasgun_p2_m3_charged",
+    plasmagun_p1_m1 = "weapon_plasmagun_charged",
+    plasmagun_p1_m2 = "weapon_plasmagun_charged",
+}
 
 local function load_resource(package_name, cb)
-    if Application.can_get_resource("package", package_name) then
-        Managers.package:load(package_name, "PewPew", cb)
+    if package_name ~= nil and Application.can_get_resource("package", package_name) then
+        Managers.package:load(package_name, "PewPew", function () cb(package_name) end)
     else
-        cb()
+        cb(nil)
     end
 end
 
 -- Projectile visual effects
 local function update_line_effects(line_effects_to_be_changed)
     local new_line_effects = mod:get(line_effects_to_be_changed)
-    PlayerLineEffects[line_effects_to_be_changed].vfx_width = original_player_line_effects[new_line_effects].vfx_width
-    PlayerLineEffects[line_effects_to_be_changed].keep_aligned = original_player_line_effects[new_line_effects].keep_aligned
-    PlayerLineEffects[line_effects_to_be_changed].link = original_player_line_effects[new_line_effects].link
-    load_resource(original_player_line_effects[new_line_effects].vfx, function ()
-        PlayerLineEffects[line_effects_to_be_changed].vfx = original_player_line_effects[new_line_effects].vfx
-    end)
-    load_resource(original_player_line_effects[new_line_effects].sfx, function ()
-        PlayerLineEffects[line_effects_to_be_changed].sfx = original_player_line_effects[new_line_effects].sfx
-    end)
-    load_resource(original_player_line_effects[new_line_effects].vfx_crit, function ()
-        PlayerLineEffects[line_effects_to_be_changed].vfx_crit = original_player_line_effects[new_line_effects].vfx_crit
-    end)
-    if type(original_player_line_effects[new_line_effects].emitters) == "table" then
-        load_resource(original_player_line_effects[new_line_effects].emitters.vfx.default, function ()
-            load_resource(original_player_line_effects[new_line_effects].emitters.vfx.start, function ()
-                PlayerLineEffects[line_effects_to_be_changed].emitters = table.clone(original_player_line_effects[new_line_effects].emitters)
-            end)
+    if line_effects_to_be_changed ~= new_line_effects then
+        PlayerLineEffects[line_effects_to_be_changed].vfx_width = original_player_line_effects[new_line_effects].vfx_width
+        PlayerLineEffects[line_effects_to_be_changed].keep_aligned = original_player_line_effects[new_line_effects].keep_aligned
+        PlayerLineEffects[line_effects_to_be_changed].link = original_player_line_effects[new_line_effects].link
+        load_resource(original_player_line_effects[new_line_effects].vfx, function (loaded_package_name)
+            PlayerLineEffects[line_effects_to_be_changed].vfx = loaded_package_name
         end)
-    else
-        PlayerLineEffects[line_effects_to_be_changed].emitters = nil
-    end
-    if type(original_player_line_effects[new_line_effects].emitters_crit) == "table" then
-        load_resource(original_player_line_effects[new_line_effects].emitters_crit.vfx.default, function ()
-            load_resource(original_player_line_effects[new_line_effects].emitters_crit.vfx.start, function ()
-                PlayerLineEffects[line_effects_to_be_changed].emitters_crit = table.clone(original_player_line_effects[new_line_effects].emitters_crit)
-            end)
+        load_resource(original_player_line_effects[new_line_effects].sfx, function (loaded_package_name)
+            PlayerLineEffects[line_effects_to_be_changed].sfx = loaded_package_name
         end)
-    else
-        PlayerLineEffects[line_effects_to_be_changed].emitters_crit = nil
+        load_resource(original_player_line_effects[new_line_effects].vfx_crit, function (loaded_package_name)
+            PlayerLineEffects[line_effects_to_be_changed].vfx_crit = loaded_package_name
+        end)
+        if type(original_player_line_effects[new_line_effects].emitters) == "table" then
+            load_resource(original_player_line_effects[new_line_effects].emitters.vfx.default, function (loaded_package_name)
+                load_resource(original_player_line_effects[new_line_effects].emitters.vfx.start, function (loaded_package_name)
+                    PlayerLineEffects[line_effects_to_be_changed].emitters = table.clone(original_player_line_effects[mod:get(line_effects_to_be_changed)].emitters)
+                end)
+            end)
+        else
+            PlayerLineEffects[line_effects_to_be_changed].emitters = nil
+        end
+        if type(original_player_line_effects[new_line_effects].emitters_crit) == "table" then
+            load_resource(original_player_line_effects[new_line_effects].emitters_crit.vfx.default, function (loaded_package_name)
+                load_resource(original_player_line_effects[new_line_effects].emitters_crit.vfx.start, function (loaded_package_name)
+                    PlayerLineEffects[line_effects_to_be_changed].emitters_crit = table.clone(original_player_line_effects[mod:get(line_effects_to_be_changed)].emitters_crit)
+                end)
+            end)
+        else
+            PlayerLineEffects[line_effects_to_be_changed].emitters_crit = nil
+        end
+        if type(original_player_line_effects[new_line_effects].moving_sfx) == "table" then
+            PlayerLineEffects[line_effects_to_be_changed].moving_sfx = table.clone(original_player_line_effects[new_line_effects].moving_sfx)
+        else
+            PlayerLineEffects[line_effects_to_be_changed].moving_sfx = nil
+        end
     end
 end
 
@@ -100,35 +114,58 @@ local function update_sound_effects(weapon_to_be_changed)
         stop_new_ranged_braced_shooting_auto = "wwise/events/weapon/stop_" .. RANGED_SHOOTING_SOUND_EFFECTS[new_ranged_shooting_sfx].braced
     end
     play_new_ranged_pre_loop_shot = "wwise/events/weapon/play_" .. RANGED_SHOOTING_SOUND_EFFECTS[new_ranged_shooting_sfx].pre_loop_shot
-    load_resource(play_new_ranged_shooting_auto, function ()
-        PlayerCharacterSoundEventAliases.play_ranged_shooting.events[weapon_to_be_changed] = play_new_ranged_shooting_auto
-    end)
-    load_resource(stop_new_ranged_shooting_auto, function ()
-        PlayerCharacterSoundEventAliases.stop_ranged_shooting.events[weapon_to_be_changed] = stop_new_ranged_shooting_auto
-    end)
-    load_resource(play_new_ranged_braced_shooting_auto, function ()
-        PlayerCharacterSoundEventAliases.play_ranged_braced_shooting.events[weapon_to_be_changed] = play_new_ranged_braced_shooting_auto
-    end)
-    load_resource(stop_new_ranged_braced_shooting_auto, function ()
-        PlayerCharacterSoundEventAliases.stop_ranged_braced_shooting.events[weapon_to_be_changed] = stop_new_ranged_braced_shooting_auto
-    end)
-    load_resource(play_new_ranged_pre_loop_shot, function ()
-        PlayerCharacterSoundEventAliases.ranged_pre_loop_shot.events[weapon_to_be_changed] = play_new_ranged_pre_loop_shot
-    end)
-    if RANGED_SHOOTING_SOUND_EFFECTS[new_ranged_shooting_sfx].single_shot ~= nil then
-        local play_ranged_single_shot = "wwise/events/weapon/play_" .. new_ranged_shooting_sfx
-        load_resource(play_ranged_single_shot, function ()
-            PlayerCharacterSoundEventAliases.ranged_single_shot.events[weapon_to_be_changed] = play_ranged_single_shot
+    if play_new_ranged_shooting_auto ~= PlayerCharacterSoundEventAliases.play_ranged_shooting.events[weapon_to_be_changed] then
+        load_resource(play_new_ranged_shooting_auto, function (loaded_package_name)
+            PlayerCharacterSoundEventAliases.play_ranged_shooting.events[weapon_to_be_changed] = loaded_package_name
         end)
+        load_resource(stop_new_ranged_shooting_auto, function (loaded_package_name)
+            PlayerCharacterSoundEventAliases.stop_ranged_shooting.events[weapon_to_be_changed] = loaded_package_name
+        end)
+        load_resource(play_new_ranged_braced_shooting_auto, function (loaded_package_name)
+            PlayerCharacterSoundEventAliases.play_ranged_braced_shooting.events[weapon_to_be_changed] = loaded_package_name
+        end)
+        load_resource(stop_new_ranged_braced_shooting_auto, function (loaded_package_name)
+            PlayerCharacterSoundEventAliases.stop_ranged_braced_shooting.events[weapon_to_be_changed] = loaded_package_name
+        end)
+        load_resource(play_new_ranged_pre_loop_shot, function (loaded_package_name)
+            PlayerCharacterSoundEventAliases.ranged_pre_loop_shot.events[weapon_to_be_changed] = loaded_package_name
+        end)
+        if RANGED_SHOOTING_SOUND_EFFECTS[new_ranged_shooting_sfx].single_shot ~= nil then
+            local play_ranged_single_shot = "wwise/events/weapon/play_" .. RANGED_SHOOTING_SOUND_EFFECTS[new_ranged_shooting_sfx].single_shot
+            load_resource(play_ranged_single_shot, function (loaded_package_name)
+                PlayerCharacterSoundEventAliases.ranged_single_shot.events[weapon_to_be_changed] = loaded_package_name
+            end)
+        end
     end
 end
 
 function update_single_shot_sound_effects(weapon_to_be_changed)
     local new_ranged_shooting_sfx = mod:get(weapon_to_be_changed)
     local play_ranged_single_shot = "wwise/events/weapon/play_" .. new_ranged_shooting_sfx
-    load_resource(play_ranged_single_shot, function ()
-        PlayerCharacterSoundEventAliases.ranged_single_shot.events[weapon_to_be_changed] = play_ranged_single_shot
-    end)
+    if type(PlayerCharacterSoundEventAliases.ranged_single_shot.events[weapon_to_be_changed]) == "table" then
+        if play_ranged_single_shot ~= PlayerCharacterSoundEventAliases.ranged_single_shot.events[weapon_to_be_changed].default then
+            if CHARGED_SINGLE_SHOT_SFX[new_ranged_shooting_sfx] ~= nil then
+                local play_ranged_single_shot_fully_charged = "wwise/events/weapon/play_" .. CHARGED_SINGLE_SHOT_SFX[new_ranged_shooting_sfx]
+                load_resource(play_ranged_single_shot, function (loaded_package_name)
+                    PlayerCharacterSoundEventAliases.ranged_single_shot.events[weapon_to_be_changed].default = loaded_package_name
+                end)
+                load_resource(play_ranged_single_shot_fully_charged, function (loaded_package_name)
+                    PlayerCharacterSoundEventAliases.ranged_single_shot.events[weapon_to_be_changed].fully_charged = loaded_package_name
+                end)
+            else
+                load_resource(play_ranged_single_shot, function (loaded_package_name)
+                    PlayerCharacterSoundEventAliases.ranged_single_shot.events[weapon_to_be_changed].default = loaded_package_name
+                    PlayerCharacterSoundEventAliases.ranged_single_shot.events[weapon_to_be_changed].fully_charged = loaded_package_name
+                end)
+            end
+        end
+    else
+        if play_ranged_single_shot ~= PlayerCharacterSoundEventAliases.ranged_single_shot.events[weapon_to_be_changed] then
+            load_resource(play_ranged_single_shot, function (loaded_package_name)
+                PlayerCharacterSoundEventAliases.ranged_single_shot.events[weapon_to_be_changed] = loaded_package_name
+            end)
+        end
+    end
 end
 
 for _, line_effects_widget in ipairs(mod.line_effects_widgets) do
