@@ -63,42 +63,40 @@ end
 -- Projectile visual effects
 local function update_line_effects(line_effects_to_be_changed)
     local new_line_effects = mod:get(line_effects_to_be_changed)
-    if line_effects_to_be_changed ~= new_line_effects then
-        PlayerLineEffects[line_effects_to_be_changed].vfx_width = original_player_line_effects[new_line_effects].vfx_width
-        PlayerLineEffects[line_effects_to_be_changed].keep_aligned = original_player_line_effects[new_line_effects].keep_aligned
-        PlayerLineEffects[line_effects_to_be_changed].link = original_player_line_effects[new_line_effects].link
-        load_resource(original_player_line_effects[new_line_effects].vfx, function (loaded_package_name)
-            PlayerLineEffects[line_effects_to_be_changed].vfx = loaded_package_name
-        end)
-        load_resource(original_player_line_effects[new_line_effects].sfx, function (loaded_package_name)
-            PlayerLineEffects[line_effects_to_be_changed].sfx = loaded_package_name
-        end)
-        load_resource(original_player_line_effects[new_line_effects].vfx_crit, function (loaded_package_name)
-            PlayerLineEffects[line_effects_to_be_changed].vfx_crit = loaded_package_name
-        end)
-        if type(original_player_line_effects[new_line_effects].emitters) == "table" then
-            load_resource(original_player_line_effects[new_line_effects].emitters.vfx.default, function (loaded_package_name)
-                load_resource(original_player_line_effects[new_line_effects].emitters.vfx.start, function (loaded_package_name)
-                    PlayerLineEffects[line_effects_to_be_changed].emitters = table.clone(original_player_line_effects[mod:get(line_effects_to_be_changed)].emitters)
-                end)
+    PlayerLineEffects[line_effects_to_be_changed].vfx_width = original_player_line_effects[new_line_effects].vfx_width
+    PlayerLineEffects[line_effects_to_be_changed].keep_aligned = original_player_line_effects[new_line_effects].keep_aligned
+    PlayerLineEffects[line_effects_to_be_changed].link = original_player_line_effects[new_line_effects].link
+    load_resource(original_player_line_effects[new_line_effects].vfx, function (loaded_package_name)
+        PlayerLineEffects[line_effects_to_be_changed].vfx = loaded_package_name
+    end)
+    load_resource(original_player_line_effects[new_line_effects].sfx, function (loaded_package_name)
+        PlayerLineEffects[line_effects_to_be_changed].sfx = loaded_package_name
+    end)
+    load_resource(original_player_line_effects[new_line_effects].vfx_crit, function (loaded_package_name)
+        PlayerLineEffects[line_effects_to_be_changed].vfx_crit = loaded_package_name
+    end)
+    if type(original_player_line_effects[new_line_effects].emitters) == "table" then
+        load_resource(original_player_line_effects[new_line_effects].emitters.vfx.default, function (loaded_package_name)
+            load_resource(original_player_line_effects[new_line_effects].emitters.vfx.start, function (loaded_package_name)
+                PlayerLineEffects[line_effects_to_be_changed].emitters = table.clone(original_player_line_effects[mod:get(line_effects_to_be_changed)].emitters)
             end)
-        else
-            PlayerLineEffects[line_effects_to_be_changed].emitters = nil
-        end
-        if type(original_player_line_effects[new_line_effects].emitters_crit) == "table" then
-            load_resource(original_player_line_effects[new_line_effects].emitters_crit.vfx.default, function (loaded_package_name)
-                load_resource(original_player_line_effects[new_line_effects].emitters_crit.vfx.start, function (loaded_package_name)
-                    PlayerLineEffects[line_effects_to_be_changed].emitters_crit = table.clone(original_player_line_effects[mod:get(line_effects_to_be_changed)].emitters_crit)
-                end)
+        end)
+    else
+        PlayerLineEffects[line_effects_to_be_changed].emitters = nil
+    end
+    if type(original_player_line_effects[new_line_effects].emitters_crit) == "table" then
+        load_resource(original_player_line_effects[new_line_effects].emitters_crit.vfx.default, function (loaded_package_name)
+            load_resource(original_player_line_effects[new_line_effects].emitters_crit.vfx.start, function (loaded_package_name)
+                PlayerLineEffects[line_effects_to_be_changed].emitters_crit = table.clone(original_player_line_effects[mod:get(line_effects_to_be_changed)].emitters_crit)
             end)
-        else
-            PlayerLineEffects[line_effects_to_be_changed].emitters_crit = nil
-        end
-        if type(original_player_line_effects[new_line_effects].moving_sfx) == "table" then
-            PlayerLineEffects[line_effects_to_be_changed].moving_sfx = table.clone(original_player_line_effects[new_line_effects].moving_sfx)
-        else
-            PlayerLineEffects[line_effects_to_be_changed].moving_sfx = nil
-        end
+        end)
+    else
+        PlayerLineEffects[line_effects_to_be_changed].emitters_crit = nil
+    end
+    if type(original_player_line_effects[new_line_effects].moving_sfx) == "table" then
+        PlayerLineEffects[line_effects_to_be_changed].moving_sfx = table.clone(original_player_line_effects[new_line_effects].moving_sfx)
+    else
+        PlayerLineEffects[line_effects_to_be_changed].moving_sfx = nil
     end
 end
 
