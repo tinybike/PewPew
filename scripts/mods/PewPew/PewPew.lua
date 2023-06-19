@@ -45,7 +45,7 @@ local RANGED_SHOOTING_SOUND_EFFECTS = {
     ogryn_power_maul_1h_loop = { braced="ogryn_power_maul_1h_loop", pre_loop_shot="weapon_silence", single_shot=nil },
 }
 local CHARGED_SINGLE_SHOT_SFX = {
-    lasgun_p2_p1 = "lasgun_p2_p1_charged",
+    lasgun_p2_m1 = "lasgun_p2_m1_charged",
     lasgun_p2_m2 = "lasgun_p2_m2_charged",
     lasgun_p2_m3 = "lasgun_p2_m3_charged",
     plasmagun_p1_m1 = "weapon_plasmagun_charged",
